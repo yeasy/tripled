@@ -34,6 +34,7 @@ test: $(TRIPLED) $(TEST)
 #install: $(MANPAGES)
 install:
 	#install $(MANPAGES) $(MANDIR)
+	cp etc/tripled.conf /etc/tripled/
 	python setup.py install
 
 develop: $(MANPAGES)

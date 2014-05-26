@@ -1,6 +1,7 @@
 __author__ = 'baohua'
 
 from oslo.config import cfg
+from tripled.common import config
 
 from tripled.stack.node import Control, Network, Compute
 
@@ -17,11 +18,8 @@ nodes_opts = [
                 help='List of IP addresses of OpenStack network node(s)'),
     cfg.ListOpt('compute_ips', default=DEFAULT_COMPUTE_IPS,
                 help='List of IP addresses of OpenStack compute node(s)'),
-    ]
+]
 
-cfg.CONF(project='tripled')
-CONF = cfg.CONF
-CONF.register_opts(nodes_opts,group=nodes_group)
 
 class Stack(object):
     """
@@ -29,10 +27,11 @@ class Stack(object):
     """
 
     def __init__(self):
-        self.control_nodes = map(lambda x: Control(x), CONF.NODES.control_ips)
-        self.network_nodes = map(lambda x: Network(x), CONF.NODES.network_ips)
-        self.compute_nodes = map(lambda x: Compute(x), CONF.NODES.compute_ips)
-        pass
+        cfg.CONF(project='tripled')
+        CONF = cfg.CONF
+        self.control_nodes = map(lambda x: Control(x), CONF.STACK.control_nodes)
+        self.network_nodes = map(lambda x: Network(x), CONF.STACK.network_nodes)
+        self.compute_nodes = map(lambda x: Compute(x), CONF.STACK.compute_nodes)
 
     def get_control_nodes(self):
         return self.control_nodes
@@ -45,6 +44,7 @@ class Stack(object):
 
     def get_nodes(self):
         return self.get_control_nodes() + self.get_network_nodes() + self.get_computer_nodes()
+
 
 stack = Stack()
 

@@ -2,6 +2,7 @@
 __author__ = 'baohua'
 
 from oslo.config import cfg
+from gettext import gettext as _
 
 DEFAULT_CONTROL_NODES=[]
 DEFAULT_NETWORK_NODES=[]
@@ -19,4 +20,17 @@ stack_opts = [
                 help=_("List of compute_nodes:<ips>")),
     ]
 
+check_opts = [
+    cfg.BoolOpt('system',
+                default=True,
+                help=_("Whether to run the check checks of system")),
+    cfg.BoolOpt('neutron',
+                default=True,
+                help=_("Whether to run the check checks of neutron")),
+    cfg.BoolOpt('nova',
+                default=True,
+                help=_("Whether to run the check checks of nova")),
+]
+
 cfg.CONF.register_opts(stack_opts, "STACK")
+cfg.CONF.register_opts(check_opts, "CHECK")

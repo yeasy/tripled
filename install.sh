@@ -72,6 +72,7 @@ fi
 function core {
     echo "Installing TripleD core files"
     chmod a+x ${BIN}
+	[ ! -d /etc/tripled ] && mkdir /etc/tripled
     sudo make install
 }
 
