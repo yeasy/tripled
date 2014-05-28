@@ -2,6 +2,7 @@ __author__ = 'baohua'
 
 import os
 from oslo.config import cfg
+from tripled.common import config  #noqa
 
 
 def get_creds():
@@ -11,6 +12,7 @@ def get_creds():
     :returns: a map of credentials or None
     """
     d = {}
+    cfg.CONF(project='tripled')
     AUTH = cfg.CONF.AUTH
     d['username'] = AUTH.username or os.environ['OS_USERNAME'] or None
     d['password'] = AUTH.password or os.environ['OS_PASSWORD'] or None
@@ -19,7 +21,7 @@ def get_creds():
     if d['username'] and d['password'] and d['tenant_name'] and d['auth_url']:
         return d
     else:
-        cfg.CONF('neutron')
+        cfg.CONF(project='neutron')
         keystone_conf = cfg.CONF.keystone_authtoken
         keystone_auth_url = ('%s://%s:%s/v2.0/' %
                              (keystone_conf.auth_protocol,
