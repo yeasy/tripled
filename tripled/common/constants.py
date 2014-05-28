@@ -7,5 +7,3 @@ NODE_ROLES = {
     'network': 1,
     'compute': 2,
 }
-
-CHECKS = ['neutron', 'nova', 'system']

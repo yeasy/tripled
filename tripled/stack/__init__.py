@@ -1,2 +1,2 @@
 __author__ = 'baohua'
-__all__ = ['stack', 'node']
+__all__ = ['glance', 'keystone', 'neutron', 'node', 'nova', 'stack']

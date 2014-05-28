@@ -4,32 +4,7 @@ import logging
 from logging import Logger
 from logging.handlers import RotatingFileHandler
 from oslo.config import cfg
-
-
-log_group = cfg.OptGroup(name='Log', title='Log options')
-
-logging_cli_opts = [
-    cfg.StrOpt('log-file',
-               default='/var/log/tripled.log',
-               metavar='PATH',
-               deprecated_name='logfile',
-               help='(Optional) Name of log file to output to. '
-                    'If no default is set, logging will go to stdout.'),
-]
-
-log_opts = [
-    cfg.BoolOpt('use_stderr',
-                default=True,
-                help='Log output to standard error'),
-    cfg.StrOpt('logging_default_format_string',
-               default='%(asctime)s.%(msecs)03d %(process)d %(levelname)s '
-                       '%(name)s [-] %(instance)s%(message)s',
-               help='format string to use for log messages without context'),
-]
-
-CONF = cfg.CONF
-CONF.register_opts(log_opts, group=log_group)
-CONF.register_cli_opts(logging_cli_opts, group=log_group)
+from tripled.common import config  #noqa
 
 OUTPUT = 25
 
@@ -40,10 +15,7 @@ LEVELS = {'debug': logging.DEBUG,
           'error': logging.ERROR,
           'critical': logging.CRITICAL}
 
-LOGLEVELDEFAULT = LEVELS['output']
-
-#default: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-LOGMSGFORMAT = '%(message)s'
+LOGLEVELDEFAULT = LEVELS.get(cfg.CONF.LOG.logging_default_level, OUTPUT)
 
 
 class Singleton(type):
@@ -63,20 +35,16 @@ class Singleton(type):
             return cls.instance
 
 
-LOGMSGFORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-
-
 class NewLogger(Logger, object):
     __metaclass__ = Singleton
 
     def __init__(self):
 
         Logger.__init__(self, "tripled")
-
         # create console handler
-        ch = RotatingFileHandler(CONF.Log.log_file, maxBytes=10 * 1024 * 1024, backupCount=5)
+        ch = RotatingFileHandler(cfg.CONF.LOG.log_file, maxBytes=10 * 1024 * 1024, backupCount=5)
         # create formatter
-        formatter = logging.Formatter(LOGMSGFORMAT)
+        formatter = logging.Formatter(cfg.CONF.LOG.logging_default_format_string)
         # add formatter to ch
         ch.setFormatter(formatter)
         # add ch to lg
@@ -102,6 +70,8 @@ class NewLogger(Logger, object):
 
            logger.warning("Houston, we have a %s", "cli output", exc_info=1)
         """
+        print msg, args, kwargs
+        return
         if self.manager.disable >= OUTPUT:
             return
         if self.isEnabledFor(OUTPUT):

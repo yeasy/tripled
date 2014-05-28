@@ -1,24 +1,11 @@
 __author__ = 'baohua'
 
 from oslo.config import cfg
-from tripled.common import config
 
 from tripled.stack.node import Control, Network, Compute
-
-nodes_group = cfg.OptGroup(name='NODES', title='Nodes options')
-
-DEFAULT_CONTROL_IPS = ['127.0.0.1']
-DEFAULT_NETWORK_IPS = ['127.0.0.1']
-DEFAULT_COMPUTE_IPS = ['127.0.0.1']
-
-nodes_opts = [
-    cfg.ListOpt('control_ips', default=DEFAULT_CONTROL_IPS,
-                help='List of IP addresses of OpenStack control node(s)'),
-    cfg.ListOpt('network_ips', default=DEFAULT_NETWORK_IPS,
-                help='List of IP addresses of OpenStack network node(s)'),
-    cfg.ListOpt('compute_ips', default=DEFAULT_COMPUTE_IPS,
-                help='List of IP addresses of OpenStack compute node(s)'),
-]
+from tripled.stack.keystone import KeystoneClient
+from tripled.stack.nova import NovaClient
+from tripled.stack.neutron import NeutronClient
 
 
 class Stack(object):
@@ -32,6 +19,9 @@ class Stack(object):
         self.control_nodes = map(lambda x: Control(x), CONF.STACK.control_nodes)
         self.network_nodes = map(lambda x: Network(x), CONF.STACK.network_nodes)
         self.compute_nodes = map(lambda x: Compute(x), CONF.STACK.compute_nodes)
+        #self.keystone = KeystoneClient()
+        #self.nova = NovaClient()
+        #self.neutron = NeutronClient()
 
     def get_control_nodes(self):
         return self.control_nodes

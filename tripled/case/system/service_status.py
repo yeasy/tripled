@@ -2,14 +2,29 @@ __author__ = 'baohua'
 
 from tripled.stack.stack import stack
 from tripled.common.log import info
+from tripled.stack.nova import NovaClient
+from nova import servicegroup
+from nova.cmd.manage import ServiceCommands
+from tripled.common.case import Case
 
 
-def service_status(stack):
-    control_nodes = stack.get_control_nodes()
-    network_nodes = stack.get_network_nodes()
-    compute_nodes = stack.get_computer_nodes()
+class ServiceStatus(Case):
+    def __init__(self):
+        super(ServiceStatus, self).__init__()
+
+    def run_case(self, stack):
+        """Check the service status.
+
+        :param stack: the stack instance
+        :returns: True or False
+        """
+        novaclient = NovaClient()
+        novaclient.get_services().list()
+        service_command = ServiceCommands()
+        service_command.list()
+        self.result = True
+        super(ServiceStatus, self).run_case()
 
 
 if __name__ == '__main__':
-    info('run test case')
-    print service_status(stack)
+    ServiceStatus().run()

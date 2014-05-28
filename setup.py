@@ -44,6 +44,12 @@ setup(
         'oslo.config>=1.2',
         'argparse>=1.0',
         'six>=1.5',
+        'nova>=1.0',
+        'keystone>=0.2',
+        'python-novaclient>=2.0',
+        'python-neutronclient>=2.0',
+        'glance>=1.0',
+        'python-glanceclient>=0.1',
     ],
     scripts=scripts,
 )

@@ -74,6 +74,7 @@ function core {
     chmod a+x ${BIN}
 	[ ! -d /etc/tripled ] && mkdir /etc/tripled
     sudo make install
+    chmod u+s /usr/bin/tripled
 }
 
 # Install TripleD deps
@@ -81,11 +82,14 @@ function dep {
     echo "Installing TripleD dependencies"
     if [ "$DIST" = "Fedora" -o "$DIST" = "CentOS" ]; then
         $install gcc make  python-setuptools help2man \
-         pyflakes pylint python-pep8 > /dev/null
+         pyflakes pylint python-pep8 tcpdump > /dev/null
     else
         $install gcc make python-setuptools help2man \
-            pyflakes pylint pep8 > /dev/null
+            pyflakes pylint pep8 tcpdump > /dev/null
     fi
+    IMAGE_FILE=cirros-0.3.0-x86_64-disk.img
+    IMAGE_URL=https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img
+    [ -f ${IMAGE_FILE} ] || wget ${IMAGE_URL}
 }
 
 # Install TripleD developer dependencies

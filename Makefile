@@ -31,11 +31,22 @@ errcheck: $(PYSRC)
 test: $(TRIPLED) $(TEST)
 	-echo "Running tests"
 
+.PHONY: doc clean install uinstall
+
 #install: $(MANPAGES)
 install:
 	#install $(MANPAGES) $(MANDIR)
 	cp etc/tripled.conf /etc/tripled/
-	python setup.py install
+	python setup.py install  --record install_record.txt
+
+uninstall:
+	#rm /etc/tripled/tripled.conf
+	@cat install_record.txt
+	@cat install_record.txt | xargs rm -rf
+
+clean:
+	rm /etc/tripled/tripled.conf
+	rm -rf build dist tripled.egg-info
 
 develop: $(MANPAGES)
 	# Perhaps we should link these as well
@@ -46,8 +57,6 @@ man: $(MANPAGES)
 
 tripled.1: $(BIN)
 	PYTHONPATH=. help2man -N -n "Easy OpenvSwitch Bridge Operation Platform." $< -o $@
-
-.PHONY: doc
 
 doc: man
 	doxygen doc/doxygen.cfg
