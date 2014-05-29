@@ -1,11 +1,13 @@
 __author__ = 'baohua'
 
-from tripled.common.log import output
-from tripled.common.log import info
 from tripled.common.case import Case
 
 
 class DHCP(Case):
+    """
+    DHCP : the case to detect dhcp problem.
+    """
+
     def __init__(self):
         super(DHCP, self).__init__()
 

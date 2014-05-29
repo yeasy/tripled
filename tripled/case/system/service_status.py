@@ -1,14 +1,14 @@
 __author__ = 'baohua'
 
-from tripled.stack.stack import stack
-from tripled.common.log import info
 from tripled.stack.nova import NovaClient
-from nova import servicegroup
-from nova.cmd.manage import ServiceCommands
 from tripled.common.case import Case
 
 
 class ServiceStatus(Case):
+    """
+    ServiceStatus : the case to get service status.
+    """
+
     def __init__(self):
         super(ServiceStatus, self).__init__()
 
@@ -18,12 +18,11 @@ class ServiceStatus(Case):
         :param stack: the stack instance
         :returns: True or False
         """
-        novaclient = NovaClient()
-        novaclient.get_services().list()
-        service_command = ServiceCommands()
-        service_command.list()
+        nova_client = NovaClient()
         self.result = True
-        super(ServiceStatus, self).run_case()
+        res_stat = nova_client.get_res_stat()
+        self.stat_msg = [e + '\n' + '\n'.join(res_stat[e]) for e in res_stat if res_stat[e]]
+        super(ServiceStatus, self).run_case(module_name='Service Status')
 
 
 if __name__ == '__main__':

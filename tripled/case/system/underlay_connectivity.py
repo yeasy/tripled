@@ -1,12 +1,14 @@
 __author__ = 'baohua'
 
 from tripled.common.log import warn, info, output
-from tripled.stack.stack import stack
-from tripled.common.util import color_str
 from tripled.common.case import Case
 
 
 class UnderlayConnectivity(Case):
+    """
+    UnderlayConnectivity : the case to detect underlay connectivity problem.
+    """
+
     def __init__(self):
         super(UnderlayConnectivity, self).__init__()
 
