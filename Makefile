@@ -47,6 +47,7 @@ uninstall:
 clean:
 	rm /etc/tripled/tripled.conf
 	rm -rf build dist tripled.egg-info
+	find . -name "*.pyc"|xargs rm -f
 
 develop: $(MANPAGES)
 	# Perhaps we should link these as well

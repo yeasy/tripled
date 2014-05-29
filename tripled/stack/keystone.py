@@ -8,6 +8,10 @@ import keystoneclient.v2_0.client as ksclient
 
 
 class KeystoneClient(object):
+    """
+    KeystoneClient :client to get keystone resources.
+    """
+
     def __init__(self, username=None, tenant_name=None, password=None,
                  auth_url=None):
         d = get_creds()

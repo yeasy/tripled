@@ -5,6 +5,10 @@ import neutronclient.v2_0.client as neutronclient
 
 
 class NeutronClient(object):
+    """
+    NeutronClient :client to get neutron resources.
+    """
+
     def __init__(self, username=None, tenant_name=None, password=None,
                  auth_url=None):
         d = get_creds()
