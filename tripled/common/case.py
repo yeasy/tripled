@@ -8,7 +8,7 @@ import sys
 
 class Case(object):
     """
-    Case : a case of a check
+    A check case.
     """
 
     def __init__(self, stack=the_stack):
@@ -43,7 +43,7 @@ class Case(object):
             print color_str('b', '\n'.join(self.stat_msg))
 
     def run(self, stack=the_stack, **kwargs):
-        """Run the case ans show it's output msg.
+        """Run the case and show it's output msg.
 
         :param statck: The stack instance
         :returns:

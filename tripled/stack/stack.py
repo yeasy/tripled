@@ -24,15 +24,31 @@ class Stack(object):
         #self.neutron = NeutronClient()
 
     def get_control_nodes(self):
+        """
+        :param
+        :return: A list of control node instances generated from the conf file.
+        """
         return self.control_nodes
 
     def get_network_nodes(self):
+        """
+        :param
+        :return: A list of network node instances generated from the conf file.
+        """
         return self.network_nodes
 
     def get_computer_nodes(self):
+        """
+        :param
+        :return: A list of compute node instances generated from the conf file.
+        """
         return self.compute_nodes
 
     def get_nodes(self):
+        """
+        :param
+        :return: A list of all node instances generated from the conf file.
+        """
         return self.get_control_nodes() + self.get_network_nodes() + self.get_computer_nodes()
 
 

@@ -37,16 +37,15 @@ test: $(TRIPLED) $(TEST)
 install:
 	#install $(MANPAGES) $(MANDIR)
 	cp etc/tripled.conf /etc/tripled/
-	python setup.py install  --record install_record.txt
+	python setup.py install  --record install.log
 
 uninstall:
 	#rm /etc/tripled/tripled.conf
-	@cat install_record.txt
-	@cat install_record.txt | xargs rm -rf
+	[ -e install.log] && cat install.log | xargs rm -rf
 
 clean:
 	rm /etc/tripled/tripled.conf
-	rm -rf build dist tripled.egg-info
+	rm -rf build dist *.egg-info *.1
 	find . -name "*.pyc"|xargs rm -f
 
 develop: $(MANPAGES)
