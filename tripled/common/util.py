@@ -2,7 +2,7 @@ __author__ = 'baohua'
 
 import pkgutil
 import subprocess
-from tripled.common.log import warn, debug, info, error
+from tripled.common.log import warn, debug, info, error, output
 
 
 def color_str(color, raw_str):
@@ -35,15 +35,16 @@ def get_pkg_modules(pkg_name):
     try:
         modules = []
         cmd = "import %s" % (pkg_name)
-        exec (cmd)
-        cmd = "modules = [name for _, name, _ in pkgutil.iter_modules(%s.__path__)]" % pkg_name
-        exec (cmd)
+        exec(cmd)
+        cmd = "modules=[name for _, name, _ in pkgutil.iter_modules(" \
+              "%s.__path__)]" % pkg_name
+        exec(cmd)
         return modules
     except ImportError:
         return None
 
 
-def get_valid_checks():
+def get_available_checks():
     """Get the available checks in the system.
 
     :param :
@@ -58,17 +59,20 @@ def run_check(name):
     :param name: the check name, e.g., system or nova
     :returns:
     """
-    if name not in get_valid_checks():
-        warn(_("The check %s is not registered" % name))
+    if name not in get_available_checks():
+        warn(_("The check %s is not registered\n" % name))
+        return
     pkg_name = 'tripled.case.%s' % name
     cases = get_pkg_modules(pkg_name)
     for case in cases:
         cmd = 'sudo python -m %s' % pkg_name + '.' + case
-        info("cmd = %s" % cmd)
-        result, err = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()
+        info("run cmd = %s\n" % cmd)
+        result, err = \
+            subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, shell=True).communicate()
         if err:
             error(err)
-        print result
+        output(result)
 
 if __name__ == "__main__":
     run_check("system")

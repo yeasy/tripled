@@ -1,7 +1,7 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 __author__ = 'baohua'
 
-from oslo.config import cfg
+from oslo_config import cfg
 from gettext import gettext as _
 
 DEFAULT_CONTROL_NODES = []
@@ -40,7 +40,7 @@ check_opts = [
 ]
 cfg.CONF.register_opts(check_opts, "CHECK")
 
-logging_cli_opts = [
+log_cli_opts = [
     cfg.StrOpt('log_file',
                default='/var/log/tripled.log',
                metavar='PATH',
@@ -48,21 +48,21 @@ logging_cli_opts = [
                help='(Optional) Name of log file to output to. '
                     'If no default is set, logging will go to stdout.'),
 ]
-log_group = cfg.OptGroup(name='LOG', title='Log options')
-cfg.CONF.register_cli_opts(logging_cli_opts, group=log_group)
 
 log_opts = [
     cfg.BoolOpt('use_stderr',
                 default=True,
                 help='Log output to standard error'),
-    cfg.StrOpt('logging_default_format_string',
+    cfg.StrOpt('msg_format',
                default='%(asctime)s.%(msecs)03d %(process)d %(levelname)s '
                        '%(name)s [-] %(message)s',
                help='format string to use for log messages without context'),
-    cfg.StrOpt('logging_default_level',
-               default='debug ',
+    cfg.StrOpt('level',
+               default='info',
                help='default log level'),
 ]
+log_group = cfg.OptGroup(name='LOG', title='Log options')
+cfg.CONF.register_cli_opts(log_cli_opts, group=log_group)
 cfg.CONF.register_opts(log_opts, group=log_group)
 
 auth_opts = [

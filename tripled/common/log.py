@@ -1,10 +1,10 @@
 __author__ = 'baohua'
 
 import logging
-from logging import Logger
-from logging.handlers import RotatingFileHandler
-from oslo.config import cfg
-from tripled.common import config  #noqa
+import sys
+import types
+from oslo_config import cfg
+from tripled.common import config  # do not remove this line
 
 OUTPUT = 25
 
@@ -15,7 +15,38 @@ LEVELS = {'debug': logging.DEBUG,
           'error': logging.ERROR,
           'critical': logging.CRITICAL}
 
-LOGLEVELDEFAULT = LEVELS.get(cfg.CONF.LOG.logging_default_level, OUTPUT)
+#default: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+LEVEL_DEFAULT = cfg.CONF.LOG.level
+
+# Modified from python2.5/__init__.py
+class StreamHandlerNoNewline(logging.StreamHandler):
+    """StreamHandler that doesn't print newlines by default.
+       Since StreamHandler automatically adds newlines, define a mod to more
+       easily support interactive mode when we want it, or errors-only logging
+       for running unit tests."""
+
+    def emit(self, record):
+        """Emit a record.
+           If a formatter is specified, it is used to format the record.
+           The record is then written to the stream with a trailing newline
+           [ N.B. this may be removed depending on feedback ]. If exception
+           information is present, it is formatted using
+           traceback.printException and appended to the stream."""
+        try:
+            msg = self.format(record)
+            fs = '%s'  # was '%s\n'
+            if not hasattr(types, 'UnicodeType'):  # if no unicode support...
+                self.stream.write(fs % msg)
+            else:
+                try:
+                    self.stream.write(fs % msg)
+                except UnicodeError:
+                    self.stream.write(fs % msg.encode('UTF-8'))
+            self.flush()
+        except (KeyboardInterrupt, SystemExit):
+            raise
+        except:
+            self.handleError(record)
 
 
 class Singleton(type):
@@ -35,30 +66,27 @@ class Singleton(type):
             return cls.instance
 
 
-class NewLogger(Logger, object):
+class MyLogger(logging.Logger, object):
     __metaclass__ = Singleton
 
     def __init__(self):
+        cfg.CONF(project='tripled')
+        logging.Logger.__init__(self, "Logger")
 
-        Logger.__init__(self, "tripled")
         # create console handler
-        ch = RotatingFileHandler(cfg.CONF.LOG.log_file, maxBytes=10 * 1024 * 1024, backupCount=5)
+        ch = StreamHandlerNoNewline(sys.stdout)
         # create formatter
-        formatter = logging.Formatter(cfg.CONF.LOG.logging_default_format_string)
+        formatter = logging.Formatter(cfg.CONF.LOG.msg_format)
         # add formatter to ch
         ch.setFormatter(formatter)
         # add ch to lg
         self.addHandler(ch)
+
         self.set_log_level()
 
-    def set_log_level(self, levelname=None):
-        level = LOGLEVELDEFAULT
-        if levelname is not None:
-            if levelname not in LEVELS:
-                raise Exception('unknown levelname seen in set_log_level')
-            else:
-                level = LEVELS.get(levelname, level)
-
+    def set_log_level(self, levelname=LEVEL_DEFAULT):
+        self.debug("Set log level to %s\n" % levelname)
+        level = LEVELS.get(levelname)
         self.setLevel(level)
         self.handlers[0].setLevel(level)
 
@@ -70,16 +98,39 @@ class NewLogger(Logger, object):
 
            logger.warning("Houston, we have a %s", "cli output", exc_info=1)
         """
-        print msg, args, kwargs
-        return
         if self.manager.disable >= OUTPUT:
             return
         if self.isEnabledFor(OUTPUT):
             self._log(OUTPUT, msg, args, kwargs)
 
 
-lg = NewLogger()
+def make_list_compatible(fn):
+    """Return a new function allowing fn( 'a 1 b' ) to be called as
+       newfn( 'a', 1, 'b' )"""
+
+    def newfn(*args):
+        """
+        Generated function. Closure-ish.
+        """
+        if len(args) == 1:
+            return fn(*args)
+        args = ' '.join([str(arg) for arg in args])
+        return fn(args)
+
+    # Fix newfn's name and docstring
+    setattr(newfn, '__name__', fn.__name__)
+    setattr(newfn, '__doc__', fn.__doc__)
+    return newfn
+
+lg = MyLogger()
+
 info, output, warn, error, debug = (
-    lg.info, lg.output, lg.warn, lg.error, lg.debug)
+    lg.info, lg.output, lg.warn, lg.error, lg.debug) = \
+    [make_list_compatible(f) for f in
+     lg.info, lg.output, lg.warn, lg.error, lg.debug]
 
 setLogLevel = lg.set_log_level
+
+if __name__ == "__main__":
+    print LEVELS
+    print LEVELS.get('debug') == logging.DEBUG

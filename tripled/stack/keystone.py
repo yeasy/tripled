@@ -1,6 +1,6 @@
 __author__ = 'baohua'
 
-from oslo.config import cfg
+from oslo_config import cfg
 from tripled.common import config  #noqa
 from tripled.common.log import error
 from tripled.common.credential import get_creds

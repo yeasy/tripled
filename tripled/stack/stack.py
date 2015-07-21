@@ -1,6 +1,6 @@
 __author__ = 'baohua'
 
-from oslo.config import cfg
+from oslo_config import cfg
 
 from tripled.stack.node import Control, Network, Compute
 from tripled.stack.keystone import KeystoneClient

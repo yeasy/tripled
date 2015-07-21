@@ -1,8 +1,6 @@
 __author__ = 'baohua'
 
-from tripled.common.credential import get_creds
 import novaclient.v1_1.client as novaclient
-from oslo.config import cfg
 from tripled.stack.service_client import ServiceClient
 
 

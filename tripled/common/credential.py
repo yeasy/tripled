@@ -1,7 +1,7 @@
 __author__ = 'baohua'
 
 import os
-from oslo.config import cfg
+from oslo_config import cfg
 from tripled.common import config  #noqa
 
 

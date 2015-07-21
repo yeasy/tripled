@@ -21,7 +21,8 @@ class UnderlayConnectivity(Case):
         for src in nodes_src:
             for dst in nodes_dst:
                 if not src.is_reachable(dst):
-                    self.fail_msg.append('Node %s cannot reach %s' % (src.ip, dst.ip))
+                    self.fail_msg.append('Node %s cannot reach %s'
+                                         % (src.ip, dst.ip))
                     warn('node %s cannot reach %s' % (src.ip, dst.ip))
                     return False
         return True
@@ -35,10 +36,12 @@ class UnderlayConnectivity(Case):
         control_nodes = stack.get_control_nodes()
         network_nodes = stack.get_network_nodes()
         compute_nodes = stack.get_computer_nodes()
-        self.result = self.test_connectivity(control_nodes, compute_nodes) and \
-                      self.test_connectivity(network_nodes, compute_nodes) and \
-                      self.test_connectivity(control_nodes, network_nodes)
-        super(UnderlayConnectivity, self).run_case(module_name='Underlay Connectivity')
+        self.result = \
+            self.test_connectivity(control_nodes, compute_nodes) and \
+            self.test_connectivity(network_nodes, compute_nodes) and \
+            self.test_connectivity(control_nodes, network_nodes)
+        super(UnderlayConnectivity, self).run_case(module_name='Underlay '
+                                                               'Connectivity')
 
 
 if __name__ == '__main__':

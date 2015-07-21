@@ -11,6 +11,8 @@ PDF = doc/latex/refman.pdf
 
 CFLAGS += -Wall -Wextra
 
+.PHONY: doc clean install uinstall
+
 all: codecheck test
 
 clean:
@@ -31,17 +33,23 @@ errcheck: $(PYSRC)
 test: $(TRIPLED) $(TEST)
 	-echo "Running tests"
 
-.PHONY: doc clean install uinstall
 
 #install: $(MANPAGES)
 install:
 	#install $(MANPAGES) $(MANDIR)
-	cp etc/tripled.conf /etc/tripled/
+	[ -e /etc/tripled/tripled.conf ] || cp etc/tripled.conf /etc/tripled/
+	pip install -r requirements.txt
 	python setup.py install  --record install.log
 
 uninstall:
 	#rm /etc/tripled/tripled.conf
-	[ -e install.log] && cat install.log | xargs rm -rf
+	-pip uninstall oslo.config -y
+	-pip uninstall oslo.i18n -y
+	-pip uninstall python-glanceclient -y
+	-pip uninstall python-keystoneclient -y
+	-pip uninstall python-novaclient -y
+	-pip uninstall python-neutronclient -y
+	[ -e install.log ] && cat install.log | xargs rm -rf
 
 clean:
 	rm /etc/tripled/tripled.conf

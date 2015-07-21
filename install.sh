@@ -74,22 +74,19 @@ function core {
     chmod a+x ${BIN}
 	[ ! -d /etc/tripled ] && mkdir /etc/tripled
     sudo make install
-    chmod u+s /usr/bin/tripled
+    chmod u+s /usr/local/bin/tripled
 }
 
 # Install TripleD deps
 function dep {
     echo "Installing TripleD dependencies"
     if [ "$DIST" = "Fedora" -o "$DIST" = "CentOS" ]; then
-        $install gcc make  python-setuptools help2man \
-         pyflakes pylint python-pep8 tcpdump > /dev/null
+        $install gcc make  python-setuptools python-pip python-devel help2man \
+        openssl-devel libffi-dev pyflakes pylint python-pep8 > /dev/null
     else
-        $install gcc make python-setuptools help2man \
-            pyflakes pylint pep8 tcpdump > /dev/null
+        $install gcc make python-setuptools  python-pip python-dev help2man \
+        libssl-dev libffi-dev pyflakes pylint pep8 > /dev/null
     fi
-    IMAGE_FILE=cirros-0.3.0-x86_64-disk.img
-    IMAGE_URL=https://launchpad.net/cirros/trunk/0.3.0/+download/cirros-0.3.0-x86_64-disk.img
-    [ -f ${IMAGE_FILE} ] || wget ${IMAGE_URL}
 }
 
 # Install TripleD developer dependencies
@@ -102,8 +99,6 @@ function all {
     echo "Installing the dependencies and the core packages)..."
     dep
     core
-    # Skip dev (doxypy) because it's huge
-    # dev
     echo "TripleD Installation Done!"
     echo "Enjoy TripleD!"
 }
